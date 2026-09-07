@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="barra-acciones">
+    <form method="get" class="filtros">
+        <input type="search" name="busqueda" value="{{ busqueda }}" placeholder="Buscar ingrediente">
+        <select name="categoria">
+            <option value="">Todas las categorías</option>
+            {% for nombre in categorias %}
+            <option value="{{ nombre }}" {{ 'selected' if categoria == nombre }}>{{ nombre }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="boton boton--claro">Filtrar</button>
+    </form>
+
+    <p class="resumen-inventario">Valor total en bodega: <strong>{{ valor_inventario | moneda }}</strong></p>
+
+    {% if usuario_actual.rol == 'administrador' %}
+    <a class="boton boton--principal" href="{{ url_for('inventario.guardar') }}">Nuevo ingrediente</a>
+    {% endif %}
+</div>
+
+<table class="tabla">
+    <thead>
+        <tr>
+            <th>Ingrediente</th><th>Categoría</th><th class="derecha">Stock</th>
+            <th class="derecha">Mínimo</th><th class="derecha">Costo unitario</th>
+            <th class="derecha">Valor</th><th>Estado</th>
+            {% if usuario_actual.rol == 'administrador' %}<th>Acciones</th>{% endif %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for ingrediente in ingredientes %}
+        <tr class="{{ 'fila--alerta' if ingrediente.necesita_alerta }}">
+            <td><strong>{{ ingrediente.nombre }}</strong></td>
+            <td>{{ ingrediente.categoria }}</td>
+            <td class="derecha">{{ ingrediente.stock | cantidad }} {{ ingrediente.unidad }}</td>
+            <td class="derecha">{{ ingrediente.stock_minimo | cantidad }} {{ ingrediente.unidad }}</td>
+            <td class="derecha">{{ ingrediente.costo_unitario | moneda }}</td>
+            <td class="derecha">{{ ingrediente.valor_en_inventario | moneda }}</td>
+            <td>
+                {% if ingrediente.esta_agotado %}
+                <span class="etiqueta etiqueta--rojo">Agotado</span>
+                {% elif ingrediente.esta_bajo %}
+                <span class="etiqueta etiqueta--naranja">Stock bajo</span>
+                {% else %}
+                <span class="etiqueta etiqueta--verde">Suficiente</span>
+                {% endif %}
+            </td>
+
+            {% if usuario_actual.rol == 'administrador' %}
+            <td>
+                <form method="post" class="formulario-linea"
+                      action="{{ url_for('inventario.reabastecer', ingrediente_id=ingrediente.id) }}">
+                    <input type="hidden" name="volver_a" value="{{ request.full_path }}">
+                    <input type="number" name="cantidad" step="0.01" min="0.01"
+                           class="campo-cantidad" placeholder="0" required>
+                    <button type="submit" class="boton boton--claro">Reabastecer</button>
+                </form>
+                <a class="enlace"
+                   href="{{ url_for('inventario.guardar', ingrediente_id=ingrediente.id) }}">Editar</a>
+            </td>
+            {% endif %}
+        </tr>
+    {% else %}
+        <tr><td colspan="8" class="vacio">No hay ingredientes que coincidan con el filtro.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

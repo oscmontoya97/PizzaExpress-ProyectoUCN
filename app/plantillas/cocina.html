@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<p class="ayuda">
+    Tablero de la cocina: cada columna es un estado del pedido. El pizzero avanza
+    los pedidos a medida que los prepara.
+</p>
+
+<div class="tablero">
+    {% for estado in ['pendiente', 'en_preparacion', 'lista'] %}
+    <section class="columna-tablero">
+        <h3 class="columna-tablero__titulo">
+            {{ ESTADOS[estado].etiqueta }}
+            <span class="distintivo">{{ tablero[estado] | length }}</span>
+        </h3>
+
+        {% for pedido in tablero[estado] %}
+        <article class="tarjeta tarjeta--pedido">
+            <div class="tarjeta--pedido__cabecera">
+                <strong>{{ pedido.codigo }}</strong>
+                <span class="etiqueta etiqueta--gris">{{ pedido.modalidad_legible }}</span>
+            </div>
+            <p class="tarjeta--pedido__cliente">{{ pedido.cliente }} · {{ pedido.referencia }}</p>
+
+            <ul class="lista-pizzas">
+                {% for linea in pedido.lineas %}
+                <li>{{ linea.cantidad }} × {{ linea.pizza_nombre }} ({{ linea.tamano_legible }})</li>
+                {% endfor %}
+            </ul>
+
+            {% if pedido.notas %}<p class="nota">Nota: {{ pedido.notas }}</p>{% endif %}
+            <p class="ayuda">{{ pedido.creado_en | fecha }}</p>
+
+            <div class="barra-acciones">
+                {% for siguiente in pedido.siguientes_estados %}
+                <form method="post" action="{{ url_for('cocina.avanzar', pedido_id=pedido.id) }}">
+                    <input type="hidden" name="estado" value="{{ siguiente }}">
+                    <button type="submit"
+                            class="boton {{ 'boton--peligro' if siguiente == 'cancelado' else 'boton--principal' }}">
+                        {{ ESTADOS[siguiente].etiqueta }}
+                    </button>
+                </form>
+                {% endfor %}
+            </div>
+        </article>
+        {% else %}
+        <p class="vacio">Sin pedidos en este estado.</p>
+        {% endfor %}
+    </section>
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,3 @@
+# Unica dependencia externa del proyecto.
+# La base de datos usa sqlite3, que ya viene con Python.
+Flask>=3.0

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<p class="ayuda">
+    Un ingrediente entra en alerta cuando su stock llega o baja del mínimo definido.
+    Mientras un insumo esté agotado, las pizzas que lo usan no se pueden vender.
+</p>
+
+{% if alertas.total == 0 %}
+<p class="mensaje mensaje--exito">Todo el inventario está por encima del stock mínimo.</p>
+{% else %}
+
+{% if alertas.agotados %}
+<section class="tarjeta">
+    <h3>Agotados ({{ alertas.agotados | length }})</h3>
+    {% with lista = alertas.agotados, tipo = 'rojo' %}{% include "_tabla_alertas.html" %}{% endwith %}
+</section>
+{% endif %}
+
+{% if alertas.bajos %}
+<section class="tarjeta">
+    <h3>Por acabarse ({{ alertas.bajos | length }})</h3>
+    {% with lista = alertas.bajos, tipo = 'naranja' %}{% include "_tabla_alertas.html" %}{% endwith %}
+</section>
+{% endif %}
+
+{% endif %}
+
+{% endblock %}

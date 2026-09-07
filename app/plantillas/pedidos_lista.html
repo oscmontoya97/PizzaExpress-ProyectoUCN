@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="barra-acciones">
+    <form method="get" class="filtros">
+        <input type="search" name="busqueda" value="{{ busqueda }}" placeholder="Código o cliente">
+
+        <select name="estado">
+            <option value="">Todos los estados</option>
+            {% for clave, datos in ESTADOS.items() %}
+            <option value="{{ clave }}" {{ 'selected' if estado == clave }}>{{ datos.etiqueta }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="modalidad">
+            <option value="">Todas las modalidades</option>
+            {% for clave, datos in MODALIDADES.items() %}
+            <option value="{{ clave }}" {{ 'selected' if modalidad == clave }}>{{ datos.etiqueta }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="boton boton--claro">Filtrar</button>
+    </form>
+
+    <a class="boton boton--principal" href="{{ url_for('pedidos.nuevo') }}">Nuevo pedido</a>
+</div>
+
+{% if pedidos %}
+<table class="tabla">
+    <thead>
+        <tr>
+            <th>Código</th><th>Fecha</th><th>Cliente</th><th>Modalidad</th>
+            <th>Pizzas</th><th>Estado</th><th class="derecha">Total</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for pedido in pedidos %}
+        <tr>
+            <td><strong>{{ pedido.codigo }}</strong></td>
+            <td>{{ pedido.creado_en | fecha }}</td>
+            <td>{{ pedido.cliente }}<br><small>{{ pedido.referencia }}</small></td>
+            <td>{{ pedido.modalidad_legible }}</td>
+            <td>{{ pedido.total_pizzas }}</td>
+            <td><span class="etiqueta etiqueta--{{ pedido.color_estado }}">{{ pedido.estado_legible }}</span></td>
+            <td class="derecha">{{ pedido.total | moneda }}</td>
+            <td><a class="enlace" href="{{ url_for('pedidos.detalle', pedido_id=pedido.id) }}">Ver</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="vacio">No hay pedidos que coincidan con el filtro.</p>
+{% endif %}
+
+{% endblock %}

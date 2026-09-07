@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<form method="post" class="formulario">
+
+    <!-- Datos del cliente y modalidad del pedido -->
+    <section class="tarjeta">
+        <h3>Datos del pedido</h3>
+
+        <div class="rejilla-campos">
+            <div>
+                <label for="modalidad">Modalidad</label>
+                <select id="modalidad" name="modalidad" required>
+                    {% for clave, datos in MODALIDADES.items() %}
+                    <option value="{{ clave }}" {{ 'selected' if formulario.get('modalidad') == clave }}>
+                        {{ datos.etiqueta }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="cliente">Cliente</label>
+                <input type="text" id="cliente" name="cliente" required
+                       value="{{ formulario.get('cliente', '') }}" placeholder="Nombre de quien pide">
+            </div>
+
+            <div>
+                <label for="referencia">Mesa, teléfono o dirección</label>
+                <input type="text" id="referencia" name="referencia"
+                       value="{{ formulario.get('referencia', '') }}"
+                       placeholder="Mesa 4 / Calle 45 # 12-30">
+                <small class="ayuda">Obligatorio para pedidos en mesa y a domicilio.</small>
+            </div>
+
+            <div>
+                <label for="notas">Notas para la cocina</label>
+                <input type="text" id="notas" name="notas" value="{{ formulario.get('notas', '') }}"
+                       placeholder="Sin cebolla, extra queso...">
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu: se indica la cantidad de cada pizza y el tamano -->
+    <section class="tarjeta">
+        <h3>Pizzas del menú</h3>
+        <p class="ayuda">
+            Escribe la cantidad de las pizzas que quieres pedir. El inventario se descuenta
+            automáticamente al guardar y la venta se bloquea si falta algún ingrediente.
+        </p>
+
+        <table class="tabla">
+            <thead>
+                <tr><th>Pizza</th><th>Tamaño</th><th>Precio</th><th>Cantidad</th></tr>
+            </thead>
+            <tbody>
+            {% for item in menu %}
+                <tr class="{{ 'fila--agotada' if not item.disponible }}">
+                    <td>
+                        <strong>{{ item.pizza.nombre }}</strong><br>
+                        <small>{{ item.pizza.descripcion }}</small>
+                        {% if not item.disponible %}
+                        <br><span class="etiqueta etiqueta--rojo">Sin inventario</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <input type="hidden" name="pizza_id" value="{{ item.pizza.id }}">
+                        <select name="tamano" class="select-tamano">
+                            {% for clave, datos in TAMANOS.items() %}
+                            <option value="{{ clave }}" {{ 'selected' if clave == 'mediana' }}>
+                                {{ datos.etiqueta }} — {{ item.tamanos[clave].precio | moneda }}
+                                {% if not item.tamanos[clave].disponible %}(sin stock){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>{{ item.pizza.precio_base | moneda }}<br><small>tamaño mediano</small></td>
+                    <td>
+                        <input type="number" name="cantidad" value="0" min="0" max="50" class="campo-cantidad">
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <div class="barra-acciones">
+        <a class="boton boton--claro" href="{{ url_for('pedidos.listar') }}">Cancelar</a>
+        <button type="submit" class="boton boton--principal">Registrar pedido</button>
+    </div>
+</form>
+
+{% endblock %}

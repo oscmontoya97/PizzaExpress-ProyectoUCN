@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<!-- Metricas del dia -->
+<section class="tarjetas">
+    <article class="tarjeta tarjeta--metrica">
+        <p class="metrica__rotulo">Ventas de hoy</p>
+        <p class="metrica__valor">{{ resumen_hoy.ventas | moneda }}</p>
+        <p class="metrica__detalle">{{ resumen_hoy.pedidos }} pedido(s) · {{ resumen_hoy.pizzas }} pizza(s)</p>
+    </article>
+
+    <article class="tarjeta tarjeta--metrica">
+        <p class="metrica__rotulo">Pedidos en curso</p>
+        <p class="metrica__valor">{{ pedidos_activos }}</p>
+        <p class="metrica__detalle">Pendientes, en preparación o listos</p>
+    </article>
+
+    <article class="tarjeta tarjeta--metrica {{ 'tarjeta--peligro' if alertas.total > 0 }}">
+        <p class="metrica__rotulo">Alertas de inventario</p>
+        <p class="metrica__valor">{{ alertas.total }}</p>
+        <p class="metrica__detalle">{{ alertas.agotados | length }} agotado(s) · {{ alertas.bajos | length }} por acabarse</p>
+    </article>
+
+    <article class="tarjeta tarjeta--metrica">
+        <p class="metrica__rotulo">Valor del inventario</p>
+        <p class="metrica__valor">{{ valor_inventario | moneda }}</p>
+        <p class="metrica__detalle">Costo de los insumos en bodega</p>
+    </article>
+</section>
+
+<div class="columnas">
+    <!-- Ultimos pedidos -->
+    <section class="tarjeta">
+        <h3>Últimos pedidos</h3>
+        {% if ultimos_pedidos %}
+        <table class="tabla">
+            <thead>
+                <tr><th>Código</th><th>Cliente</th><th>Modalidad</th><th>Estado</th><th class="derecha">Total</th></tr>
+            </thead>
+            <tbody>
+            {% for pedido in ultimos_pedidos %}
+                <tr>
+                    <td><strong>{{ pedido.codigo }}</strong></td>
+                    <td>{{ pedido.cliente }}</td>
+                    <td>{{ pedido.modalidad_legible }}</td>
+                    <td><span class="etiqueta etiqueta--{{ pedido.color_estado }}">{{ pedido.estado_legible }}</span></td>
+                    <td class="derecha">{{ pedido.total | moneda }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="vacio">Todavía no hay pedidos registrados.</p>
+        {% endif %}
+
+        {% if usuario_actual.rol in ['administrador', 'cajero'] %}
+        <a class="boton boton--principal" href="{{ url_for('pedidos.nuevo') }}">Registrar un pedido</a>
+        {% endif %}
+    </section>
+
+    <!-- Alertas de stock minimo -->
+    <section class="tarjeta">
+        <h3>Ingredientes por reponer</h3>
+        {% if alertas.todas %}
+        <ul class="lista-alertas">
+            {% for ingrediente in alertas.todas[:8] %}
+            <li>
+                <span>{{ ingrediente.nombre }}</span>
+                <span class="etiqueta etiqueta--{{ 'rojo' if ingrediente.esta_agotado else 'naranja' }}">
+                    {{ ingrediente.stock | cantidad }} {{ ingrediente.unidad }}
+                    (mín. {{ ingrediente.stock_minimo | cantidad }})
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+        <a class="boton boton--claro" href="{{ url_for('inventario.alertas') }}">Ver todas las alertas</a>
+        {% else %}
+        <p class="vacio">Todo el inventario está por encima del mínimo.</p>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

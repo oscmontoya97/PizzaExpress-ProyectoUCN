@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<p class="ayuda">
+    Cada pizza tiene una receta: al vender una, sus ingredientes se descuentan del
+    inventario. Los precios mostrados corresponden a cada tamaño.
+</p>
+
+<div class="rejilla-menu">
+{% for item in menu %}
+    <article class="tarjeta tarjeta--pizza">
+        <div class="tarjeta--pizza__cabecera">
+            <h3>{{ item.pizza.nombre }}</h3>
+            {% if item.disponible %}
+            <span class="etiqueta etiqueta--verde">Disponible</span>
+            {% else %}
+            <span class="etiqueta etiqueta--rojo">Sin inventario</span>
+            {% endif %}
+        </div>
+
+        <p>{{ item.pizza.descripcion }}</p>
+
+        <table class="tabla tabla--compacta">
+            <thead><tr><th>Tamaño</th><th class="derecha">Precio</th><th>Estado</th></tr></thead>
+            <tbody>
+            {% for clave, datos in TAMANOS.items() %}
+                <tr>
+                    <td>{{ datos.etiqueta }}</td>
+                    <td class="derecha">{{ item.tamanos[clave].precio | moneda }}</td>
+                    <td>
+                        {% if item.tamanos[clave].disponible %}
+                        <span class="etiqueta etiqueta--verde">Se puede preparar</span>
+                        {% else %}
+                        <span class="etiqueta etiqueta--rojo"
+                              title="Falta: {{ item.tamanos[clave].faltantes | join(', ') }}">
+                            Falta: {{ item.tamanos[clave].faltantes | join(', ') }}
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <details>
+            <summary>Ver receta (tamaño mediano)</summary>
+            <ul class="lista-receta">
+                {% for ingrediente in item.pizza.receta %}
+                <li>{{ ingrediente.nombre }} — {{ ingrediente.cantidad | cantidad }} {{ ingrediente.unidad }}</li>
+                {% endfor %}
+            </ul>
+        </details>
+
+        {% if usuario_actual.rol == 'administrador' %}
+        <form method="post" class="formulario-linea"
+              action="{{ url_for('menu.cambiar_precio', pizza_id=item.pizza.id) }}">
+            <label for="precio-{{ item.pizza.id }}">Precio base</label>
+            <input type="number" id="precio-{{ item.pizza.id }}" name="precio_base"
+                   step="500" min="0" value="{{ item.pizza.precio_base | round | int }}">
+            <button type="submit" class="boton boton--claro">Actualizar</button>
+        </form>
+
+        <form method="post" action="{{ url_for('menu.cambiar_disponibilidad', pizza_id=item.pizza.id) }}">
+            <input type="hidden" name="activa" value="0">
+            <button type="submit" class="boton boton--peligro">Retirar del menú</button>
+        </form>
+        {% endif %}
+    </article>
+{% endfor %}
+</div>
+
+{% if usuario_actual.rol == 'administrador' %}
+{% set retiradas = todas | rejectattr('activa') | list %}
+{% if retiradas %}
+<section class="tarjeta">
+    <h3>Pizzas retiradas del menú</h3>
+    <table class="tabla">
+        <tbody>
+        {% for pizza in retiradas %}
+            <tr>
+                <td><strong>{{ pizza.nombre }}</strong> — {{ pizza.precio_base | moneda }}</td>
+                <td class="derecha">
+                    <form method="post"
+                          action="{{ url_for('menu.cambiar_disponibilidad', pizza_id=pizza.id) }}">
+                        <input type="hidden" name="activa" value="1">
+                        <button type="submit" class="boton boton--principal">Volver a activar</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endif %}
+{% endif %}
+
+{% endblock %}

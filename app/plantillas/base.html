@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- El nombre de la marca aparece tambien en la pestaña del navegador -->
+    <title>{{ titulo }} · {{ NOMBRE_APP }}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename=NOMBRE_LOGO) }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+
+<!-- ENCABEZADO: logo + nombre "Pizza Express" en todas las pantallas -->
+<header class="encabezado">
+    <div class="contenedor encabezado__interior">
+        <a class="marca" href="{{ url_for('panel.inicio') }}">
+            <img class="marca__logo"
+                 src="{{ url_for('static', filename=NOMBRE_LOGO) }}"
+                 alt="Logo de {{ NOMBRE_APP }}">
+            <span class="marca__texto">
+                <strong>{{ NOMBRE_APP }}</strong>
+                <small>{{ LEMA }}</small>
+            </span>
+        </a>
+
+        {% if usuario_actual %}
+        <div class="sesion">
+            <span class="sesion__nombre">{{ usuario_actual.nombre }}</span>
+            <a class="boton boton--claro" href="{{ url_for('autenticacion.logout') }}">Salir</a>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if usuario_actual %}
+    <!-- Navegacion: cada rol ve solo las secciones que le corresponden -->
+    <nav class="navegacion">
+        <div class="contenedor navegacion__interior">
+            <a href="{{ url_for('panel.inicio') }}"
+               class="{{ 'activo' if request.endpoint == 'panel.inicio' }}">Panel</a>
+
+            {% if usuario_actual.rol in ['administrador', 'cajero'] %}
+            <a href="{{ url_for('pedidos.listar') }}"
+               class="{{ 'activo' if request.blueprint == 'pedidos' }}">Pedidos</a>
+            {% endif %}
+
+            {% if usuario_actual.rol in ['administrador', 'pizzero'] %}
+            <a href="{{ url_for('cocina.tablero') }}"
+               class="{{ 'activo' if request.blueprint == 'cocina' }}">Cocina</a>
+            {% endif %}
+
+            <a href="{{ url_for('menu.catalogo') }}"
+               class="{{ 'activo' if request.blueprint == 'menu' }}">Menú</a>
+
+            {% if usuario_actual.rol in ['administrador', 'cajero'] %}
+            <a href="{{ url_for('inventario.listar') }}"
+               class="{{ 'activo' if request.endpoint == 'inventario.listar' }}">Inventario</a>
+            {% endif %}
+
+            <a href="{{ url_for('inventario.alertas') }}"
+               class="{{ 'activo' if request.endpoint == 'inventario.alertas' }}">
+                Alertas
+                {% if total_alertas > 0 %}<span class="distintivo">{{ total_alertas }}</span>{% endif %}
+            </a>
+
+            {% if usuario_actual.rol == 'administrador' %}
+            <a href="{{ url_for('reportes.ventas') }}"
+               class="{{ 'activo' if request.blueprint == 'reportes' }}">Reportes</a>
+            {% endif %}
+        </div>
+    </nav>
+    {% endif %}
+</header>
+
+<main class="contenedor contenido">
+    <h2 class="titulo-pagina">{{ titulo }}</h2>
+
+    <!-- Mensajes de exito, aviso o error -->
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+        {% if mensajes %}
+            {% for categoria, mensaje in mensajes %}
+            <p class="mensaje mensaje--{{ categoria }}">{{ mensaje }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block contenido %}{% endblock %}
+</main>
+
+<footer class="pie">
+    <div class="contenedor pie__interior">
+        <img class="pie__logo"
+             src="{{ url_for('static', filename=NOMBRE_LOGO) }}"
+             alt="Logo de {{ NOMBRE_APP }}">
+        <span>{{ NOMBRE_APP }} · {{ LEMA }} · Proyecto de Ingeniería de Software</span>
+    </div>
+</footer>
+
+</body>
+</html>

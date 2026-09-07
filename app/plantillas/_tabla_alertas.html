@@ -1,0 +1,39 @@
+{# Trozo reutilizable: tabla de ingredientes en alerta.
+   Recibe 'lista' (ingredientes) y 'tipo' (color de la etiqueta). #}
+<table class="tabla">
+    <thead>
+        <tr>
+            <th>Ingrediente</th><th>Categoría</th><th class="derecha">Stock actual</th>
+            <th class="derecha">Stock mínimo</th><th class="derecha">Falta</th>
+            {% if usuario_actual.rol == 'administrador' %}<th>Reabastecer</th>{% endif %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for ingrediente in lista %}
+        <tr>
+            <td><strong>{{ ingrediente.nombre }}</strong></td>
+            <td>{{ ingrediente.categoria }}</td>
+            <td class="derecha">
+                <span class="etiqueta etiqueta--{{ tipo }}">
+                    {{ ingrediente.stock | cantidad }} {{ ingrediente.unidad }}
+                </span>
+            </td>
+            <td class="derecha">{{ ingrediente.stock_minimo | cantidad }} {{ ingrediente.unidad }}</td>
+            <td class="derecha">
+                {{ (ingrediente.stock_minimo - ingrediente.stock) | cantidad }} {{ ingrediente.unidad }}
+            </td>
+            {% if usuario_actual.rol == 'administrador' %}
+            <td>
+                <form method="post" class="formulario-linea"
+                      action="{{ url_for('inventario.reabastecer', ingrediente_id=ingrediente.id) }}">
+                    <input type="hidden" name="volver_a" value="{{ url_for('inventario.alertas') }}">
+                    <input type="number" name="cantidad" step="0.01" min="0.01"
+                           class="campo-cantidad" placeholder="0" required>
+                    <button type="submit" class="boton boton--claro">Sumar al stock</button>
+                </form>
+            </td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso · {{ NOMBRE_APP }}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename=NOMBRE_LOGO) }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body class="pantalla-acceso">
+
+<div class="tarjeta-acceso">
+    <!-- Marca: logo + nombre "Pizza Express" tambien en la pantalla de acceso -->
+    <div class="marca marca--vertical">
+        <img class="marca__logo marca__logo--grande"
+             src="{{ url_for('static', filename=NOMBRE_LOGO) }}"
+             alt="Logo de {{ NOMBRE_APP }}">
+        <span class="marca__texto">
+            <strong>{{ NOMBRE_APP }}</strong>
+            <small>{{ LEMA }}</small>
+        </span>
+    </div>
+
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+        {% for categoria, mensaje in mensajes %}
+        <p class="mensaje mensaje--{{ categoria }}">{{ mensaje }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    <form method="post" class="formulario">
+        <label for="usuario">Usuario</label>
+        <input type="text" id="usuario" name="usuario" required autofocus autocomplete="username">
+
+        <label for="clave">Contraseña</label>
+        <input type="password" id="clave" name="clave" required autocomplete="current-password">
+
+        <button type="submit" class="boton boton--principal boton--ancho">Entrar</button>
+    </form>
+
+    <!-- Al ser un prototipo academico se listan los usuarios de prueba -->
+    <div class="ayuda-acceso">
+        <p><strong>Usuarios de prueba</strong></p>
+        <ul>
+            {% for usuario in usuarios %}
+            <li><code>{{ usuario.usuario }}</code> / <code>{{ usuario.usuario }}123</code>
+                — {{ usuario.rol_legible }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>

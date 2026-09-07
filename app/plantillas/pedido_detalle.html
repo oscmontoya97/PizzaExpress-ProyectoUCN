@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<div class="columnas">
+    <section class="tarjeta">
+        <h3>Detalle del pedido</h3>
+        <table class="tabla">
+            <thead>
+                <tr><th>Pizza</th><th>Tamaño</th><th>Cantidad</th>
+                    <th class="derecha">Precio</th><th class="derecha">Subtotal</th></tr>
+            </thead>
+            <tbody>
+            {% for linea in pedido.lineas %}
+                <tr>
+                    <td>{{ linea.pizza_nombre }}</td>
+                    <td>{{ linea.tamano_legible }}</td>
+                    <td>{{ linea.cantidad }}</td>
+                    <td class="derecha">{{ linea.precio_unitario | moneda }}</td>
+                    <td class="derecha">{{ linea.subtotal | moneda }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr><th colspan="4" class="derecha">Total</th>
+                    <th class="derecha">{{ pedido.total | moneda }}</th></tr>
+            </tfoot>
+        </table>
+    </section>
+
+    <section class="tarjeta">
+        <h3>Información</h3>
+        <dl class="ficha">
+            <dt>Código</dt><dd><strong>{{ pedido.codigo }}</strong></dd>
+            <dt>Estado</dt>
+            <dd><span class="etiqueta etiqueta--{{ pedido.color_estado }}">{{ pedido.estado_legible }}</span></dd>
+            <dt>Modalidad</dt><dd>{{ pedido.modalidad_legible }}</dd>
+            <dt>Cliente</dt><dd>{{ pedido.cliente }}</dd>
+            <dt>{{ MODALIDADES[pedido.modalidad].etiqueta_referencia }}</dt>
+            <dd>{{ pedido.referencia or '—' }}</dd>
+            <dt>Tomado por</dt><dd>{{ pedido.usuario_nombre }}</dd>
+            <dt>Fecha</dt><dd>{{ pedido.creado_en | fecha }}</dd>
+            <dt>Notas</dt><dd>{{ pedido.notas or '—' }}</dd>
+        </dl>
+
+        {% if pedido.siguientes_estados %}
+        <h4>Cambiar estado</h4>
+        <div class="barra-acciones">
+            {% for estado in pedido.siguientes_estados %}
+            <form method="post" action="{{ url_for('pedidos.cambiar_estado', pedido_id=pedido.id) }}">
+                <input type="hidden" name="estado" value="{{ estado }}">
+                <button type="submit"
+                        class="boton {{ 'boton--peligro' if estado == 'cancelado' else 'boton--principal' }}">
+                    {{ ESTADOS[estado].etiqueta }}
+                </button>
+            </form>
+            {% endfor %}
+        </div>
+        <p class="ayuda">Al cancelar el pedido los ingredientes vuelven al inventario.</p>
+        {% endif %}
+    </section>
+</div>
+
+<a class="boton boton--claro" href="{{ url_for('pedidos.listar') }}">Volver a pedidos</a>
+
+{% endblock %}

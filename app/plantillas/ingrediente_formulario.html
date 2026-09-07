@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<form method="post" class="formulario tarjeta">
+    <div class="rejilla-campos">
+        <div>
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" required
+                   value="{{ ingrediente.nombre if ingrediente else '' }}">
+        </div>
+
+        <div>
+            <label for="categoria">Categoría</label>
+            <input type="text" id="categoria" name="categoria" list="categorias"
+                   value="{{ ingrediente.categoria if ingrediente else 'General' }}">
+            <datalist id="categorias">
+                {% for nombre in categorias %}<option value="{{ nombre }}">{% endfor %}
+            </datalist>
+        </div>
+
+        <div>
+            <label for="unidad">Unidad de medida</label>
+            <input type="text" id="unidad" name="unidad" placeholder="kg, L, unidad"
+                   value="{{ ingrediente.unidad if ingrediente else 'kg' }}">
+        </div>
+
+        <div>
+            <label for="stock">Stock actual</label>
+            <input type="number" id="stock" name="stock" step="0.01" min="0"
+                   value="{{ ingrediente.stock if ingrediente else 0 }}">
+        </div>
+
+        <div>
+            <label for="stock_minimo">Stock mínimo (umbral de alerta)</label>
+            <input type="number" id="stock_minimo" name="stock_minimo" step="0.01" min="0"
+                   value="{{ ingrediente.stock_minimo if ingrediente else 0 }}">
+        </div>
+
+        <div>
+            <label for="costo_unitario">Costo por unidad</label>
+            <input type="number" id="costo_unitario" name="costo_unitario" step="1" min="0"
+                   value="{{ ingrediente.costo_unitario if ingrediente else 0 }}">
+        </div>
+    </div>
+
+    <div class="barra-acciones">
+        <a class="boton boton--claro" href="{{ url_for('inventario.listar') }}">Cancelar</a>
+        <button type="submit" class="boton boton--principal">Guardar ingrediente</button>
+    </div>
+</form>
+
+{% endblock %}

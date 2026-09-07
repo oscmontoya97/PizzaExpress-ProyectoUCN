@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<form method="get" class="filtros">
+    <label for="desde">Desde</label>
+    <input type="date" id="desde" name="desde" value="{{ reporte.desde }}">
+    <label for="hasta">Hasta</label>
+    <input type="date" id="hasta" name="hasta" value="{{ reporte.hasta }}">
+    <button type="submit" class="boton boton--principal">Generar reporte</button>
+</form>
+
+<!-- Resumen del periodo -->
+<section class="tarjetas">
+    <article class="tarjeta tarjeta--metrica">
+        <p class="metrica__rotulo">Ventas del periodo</p>
+        <p class="metrica__valor">{{ reporte.resumen.ventas | moneda }}</p>
+        <p class="metrica__detalle">Sin contar pedidos cancelados</p>
+    </article>
+    <article class="tarjeta tarjeta--metrica">
+        <p class="metrica__rotulo">Pedidos</p>
+        <p class="metrica__valor">{{ reporte.resumen.pedidos }}</p>
+        <p class="metrica__detalle">{{ reporte.resumen.cancelados }} cancelado(s)</p>
+    </article>
+    <article class="tarjeta tarjeta--metrica">
+        <p class="metrica__rotulo">Pizzas vendidas</p>
+        <p class="metrica__valor">{{ reporte.resumen.pizzas }}</p>
+        <p class="metrica__detalle">Unidades entregadas o en proceso</p>
+    </article>
+    <article class="tarjeta tarjeta--metrica">
+        <p class="metrica__rotulo">Ticket promedio</p>
+        <p class="metrica__valor">{{ reporte.resumen.ticket_promedio | moneda }}</p>
+        <p class="metrica__detalle">Venta media por pedido</p>
+    </article>
+</section>
+
+<div class="columnas">
+    <section class="tarjeta">
+        <h3>Pizzas más vendidas</h3>
+        {% if reporte.ranking %}
+        <table class="tabla">
+            <thead><tr><th>#</th><th>Pizza</th><th class="derecha">Unidades</th>
+                       <th class="derecha">Ventas</th></tr></thead>
+            <tbody>
+            {% for fila in reporte.ranking %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ fila.nombre }}</td>
+                    <td class="derecha">{{ fila.unidades }}</td>
+                    <td class="derecha">{{ fila.ventas | moneda }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="vacio">No hubo ventas en este periodo.</p>
+        {% endif %}
+    </section>
+
+    <section class="tarjeta">
+        <h3>Ventas por modalidad</h3>
+        <table class="tabla">
+            <thead><tr><th>Modalidad</th><th class="derecha">Pedidos</th>
+                       <th class="derecha">Ventas</th><th class="derecha">%</th></tr></thead>
+            <tbody>
+            {% for fila in reporte.por_modalidad %}
+                <tr>
+                    <td>{{ fila.etiqueta }}</td>
+                    <td class="derecha">{{ fila.pedidos }}</td>
+                    <td class="derecha">{{ fila.ventas | moneda }}</td>
+                    <td class="derecha">{{ fila.porcentaje }}%</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Ventas por tamaño</h3>
+        <table class="tabla">
+            <thead><tr><th>Tamaño</th><th class="derecha">Unidades</th>
+                       <th class="derecha">Ventas</th></tr></thead>
+            <tbody>
+            {% for fila in reporte.por_tamano %}
+                <tr>
+                    <td>{{ fila.etiqueta }}</td>
+                    <td class="derecha">{{ fila.unidades }}</td>
+                    <td class="derecha">{{ fila.ventas | moneda }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+
+<section class="tarjeta">
+    <h3>Ventas por día</h3>
+    {% if reporte.por_dia %}
+    <table class="tabla">
+        <thead><tr><th>Día</th><th class="derecha">Pedidos</th><th class="derecha">Ventas</th></tr></thead>
+        <tbody>
+        {% for fila in reporte.por_dia %}
+            <tr>
+                <td>{{ fila.dia }}</td>
+                <td class="derecha">{{ fila.pedidos }}</td>
+                <td class="derecha">{{ fila.ventas | moneda }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="vacio">No hubo ventas en este periodo.</p>
+    {% endif %}
+    <p class="ayuda">Valor actual del inventario: <strong>{{ reporte.valor_inventario | moneda }}</strong></p>
+</section>
+
+{% endblock %}

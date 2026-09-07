@@ -1,0 +1,315 @@
+/* ==========================================================================
+   Pizza Express - hoja de estilos
+   Escrita a mano, sin frameworks ni recursos externos, para que la aplicacion
+   funcione sin conexion a internet.
+   ========================================================================== */
+
+/* Paleta de la marca */
+:root {
+    --rojo: #8c1414;
+    --rojo-oscuro: #6d0f0f;
+    --crema: #fdf6ec;
+    --texto: #2b2b2b;
+    --texto-suave: #6b6b6b;
+    --borde: #e4d9c7;
+    --blanco: #ffffff;
+    --verde: #1f7a3d;
+    --naranja: #b35c00;
+    --azul: #1b5e97;
+    --morado: #6a3fa0;
+    --gris: #5b5b5b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--crema);
+    color: var(--texto);
+    line-height: 1.5;
+}
+
+.contenedor {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* --- Encabezado con el logo y el nombre de la marca --- */
+.encabezado {
+    background: var(--rojo);
+    color: var(--blanco);
+}
+
+.encabezado__interior {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.marca {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--blanco);
+    text-decoration: none;
+}
+
+.marca--vertical {
+    flex-direction: column;
+    text-align: center;
+    color: var(--rojo);
+}
+
+/* El logo extraido de la presentacion es blanco, por eso se muestra sobre un
+   circulo rojo tanto en el encabezado como en la pantalla de acceso. */
+.marca__logo {
+    width: 46px;
+    height: 46px;
+    background: var(--rojo-oscuro);
+    border-radius: 50%;
+    padding: 6px;
+}
+
+.marca__logo--grande {
+    width: 88px;
+    height: 88px;
+    padding: 12px;
+}
+
+.marca__texto { display: flex; flex-direction: column; }
+.marca__texto strong { font-size: 1.35rem; letter-spacing: 0.3px; }
+.marca__texto small { font-size: 0.8rem; opacity: 0.85; }
+
+.sesion { display: flex; align-items: center; gap: 10px; }
+.sesion__nombre { font-weight: 600; }
+
+/* --- Navegacion --- */
+.navegacion { background: var(--rojo-oscuro); }
+.navegacion__interior { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.navegacion a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    border-bottom: 3px solid transparent;
+}
+
+.navegacion a:hover { color: var(--blanco); background: rgba(0, 0, 0, 0.15); }
+.navegacion a.activo { color: var(--blanco); border-bottom-color: var(--crema); font-weight: 600; }
+
+/* --- Contenido --- */
+.contenido { padding-top: 24px; padding-bottom: 40px; }
+.titulo-pagina { margin: 0 0 18px; font-size: 1.6rem; }
+h3 { margin-top: 0; }
+
+.tarjeta {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 18px;
+}
+
+.tarjetas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.columnas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 18px;
+    align-items: start;
+}
+
+/* --- Metricas --- */
+.tarjeta--metrica { margin-bottom: 0; }
+.metrica__rotulo { margin: 0; color: var(--texto-suave); font-size: 0.85rem; text-transform: uppercase; }
+.metrica__valor { margin: 6px 0; font-size: 1.8rem; font-weight: 700; color: var(--rojo); }
+.metrica__detalle { margin: 0; color: var(--texto-suave); font-size: 0.85rem; }
+.tarjeta--peligro { border-color: var(--rojo); border-width: 2px; }
+
+/* --- Tablas --- */
+.tabla { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+.tabla th, .tabla td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--borde); }
+.tabla th { font-size: 0.82rem; text-transform: uppercase; color: var(--texto-suave); }
+.tabla tbody tr:hover { background: #fbf7f1; }
+.tabla--compacta th, .tabla--compacta td { padding: 5px 8px; font-size: 0.9rem; }
+.derecha { text-align: right; white-space: nowrap; }
+.fila--alerta { background: #fff6f0; }
+.fila--agotada { opacity: 0.6; }
+
+/* --- Etiquetas de estado --- */
+.etiqueta {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--blanco);
+    background: var(--gris);
+    white-space: nowrap;
+}
+
+.etiqueta--verde { background: var(--verde); }
+.etiqueta--rojo { background: var(--rojo); }
+.etiqueta--naranja { background: var(--naranja); }
+.etiqueta--azul { background: var(--azul); }
+.etiqueta--morado { background: var(--morado); }
+.etiqueta--gris { background: var(--gris); }
+
+.distintivo {
+    display: inline-block;
+    min-width: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--blanco);
+    color: var(--rojo);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* --- Botones y formularios --- */
+.boton {
+    display: inline-block;
+    padding: 9px 16px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    background: var(--blanco);
+    color: var(--texto);
+}
+
+.boton--principal { background: var(--rojo); color: var(--blanco); }
+.boton--principal:hover { background: var(--rojo-oscuro); }
+.boton--claro { background: var(--blanco); border-color: var(--borde); color: var(--texto); }
+.boton--claro:hover { background: #f3ece1; }
+.boton--peligro { background: var(--blanco); border-color: var(--rojo); color: var(--rojo); }
+.boton--peligro:hover { background: var(--rojo); color: var(--blanco); }
+.boton--ancho { width: 100%; }
+
+input, select, textarea {
+    padding: 8px 10px;
+    border: 1px solid var(--borde);
+    border-radius: 7px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--blanco);
+    color: var(--texto);
+}
+
+label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+
+.rejilla-campos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.filtros { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.formulario-linea { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+.campo-cantidad { width: 90px; }
+
+.barra-acciones {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+/* --- Mensajes --- */
+.mensaje { padding: 11px 14px; border-radius: 8px; margin-bottom: 14px; border: 1px solid; }
+.mensaje--exito { background: #eaf6ee; border-color: var(--verde); color: #14532d; }
+.mensaje--error { background: #fdeceb; border-color: var(--rojo); color: #7a1010; }
+.mensaje--aviso { background: #fdf3e3; border-color: var(--naranja); color: #7a4a00; }
+
+.ayuda, .vacio { color: var(--texto-suave); font-size: 0.88rem; }
+small.ayuda { display: block; margin-top: 4px; }
+.vacio { padding: 12px 0; font-style: italic; }
+.nota { background: #fdf3e3; padding: 6px 10px; border-radius: 6px; font-size: 0.88rem; }
+.enlace { color: var(--rojo); font-weight: 600; }
+.resumen-inventario { margin: 0; }
+
+/* --- Ficha de datos (detalle del pedido) --- */
+.ficha { display: grid; grid-template-columns: 40% 60%; gap: 6px 10px; margin: 0 0 16px; }
+.ficha dt { color: var(--texto-suave); font-size: 0.85rem; }
+.ficha dd { margin: 0; }
+
+/* --- Tablero de la cocina --- */
+.tablero { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.columna-tablero { background: #f6efe4; border-radius: 10px; padding: 12px; }
+.columna-tablero__titulo { display: flex; justify-content: space-between; align-items: center; }
+.columna-tablero .distintivo { background: var(--rojo); color: var(--blanco); }
+.tarjeta--pedido { padding: 12px; margin-bottom: 12px; }
+.tarjeta--pedido__cabecera { display: flex; justify-content: space-between; align-items: center; }
+.tarjeta--pedido__cliente { margin: 4px 0; font-size: 0.9rem; }
+.lista-pizzas { margin: 8px 0; padding-left: 18px; font-size: 0.9rem; }
+
+/* --- Menu de pizzas --- */
+.rejilla-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.tarjeta--pizza__cabecera { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.lista-receta { margin: 8px 0; padding-left: 18px; font-size: 0.9rem; }
+.lista-alertas { list-style: none; padding: 0; margin: 0 0 12px; }
+.lista-alertas li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--borde);
+}
+
+/* --- Pantalla de acceso --- */
+.pantalla-acceso {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--rojo) 0%, var(--rojo-oscuro) 100%);
+    padding: 24px;
+}
+
+.tarjeta-acceso {
+    background: var(--blanco);
+    border-radius: 14px;
+    padding: 32px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.tarjeta-acceso .marca { margin-bottom: 22px; }
+.tarjeta-acceso .formulario label { margin-top: 12px; }
+.tarjeta-acceso input { width: 100%; }
+.tarjeta-acceso .boton { margin-top: 18px; }
+
+.ayuda-acceso {
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px solid var(--borde);
+    font-size: 0.85rem;
+    color: var(--texto-suave);
+}
+
+.ayuda-acceso ul { margin: 6px 0 0; padding-left: 18px; }
+.ayuda-acceso code { background: var(--crema); padding: 1px 5px; border-radius: 4px; }
+
+/* --- Pie de pagina, tambien con la marca --- */
+.pie { background: var(--rojo-oscuro); color: rgba(255, 255, 255, 0.9); font-size: 0.85rem; }
+.pie__interior { display: flex; align-items: center; gap: 10px; padding: 16px 20px; }
+.pie__logo { width: 24px; height: 24px; }
